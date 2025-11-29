@@ -20,6 +20,9 @@ const Login = () => {
   const [errors, setErrors] = useState({})
   const navigate = useNavigate()
 
+  // ⭐ YOUR CORRECT PASSWORD
+  const CORRECT_PASSWORD = "Aravind@1864"
+
   useEffect(() => {
     const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true'
     if (isAuthenticated) navigate('/')
@@ -55,7 +58,7 @@ const Login = () => {
     }
   }
 
-  // ⭐ Validate Form
+  // ⭐ Validate Form (NOW INCLUDES YOUR PASSWORD)
   const validate = () => {
     const newErrors = {}
 
@@ -64,8 +67,10 @@ const Login = () => {
       newErrors.email = 'Invalid email format'
 
     if (!formData.password) newErrors.password = 'Password is required'
-    else if (formData.password.length < 6)
-      newErrors.password = 'Password must be at least 6 characters'
+
+    // ⭐ ONLY ALLOW CORRECT PASSWORD
+    else if (formData.password !== CORRECT_PASSWORD)
+      newErrors.password = "Incorrect password!"
 
     if (userCaptcha !== generatedCaptcha)
       newErrors.captcha = "Captcha does not match!"
@@ -143,12 +148,7 @@ const Login = () => {
               </div>
 
               {/* Password Note */}
-              <small style={{
-                color: "#888",
-                fontSize: "0.85rem",
-                marginTop: "4px",
-                display: "block"
-              }}>
+              <small style={{ color: "#888", fontSize: "0.85rem" }}>
                 Use a strong password for better security.
               </small>
 
@@ -157,8 +157,6 @@ const Login = () => {
                 <small style={{
                   color: passwordColor,
                   fontWeight: "bold",
-                  marginTop: "4px",
-                  display: "block",
                   fontSize: "0.9rem"
                 }}>
                   Strength: {passwordStrength}
@@ -168,10 +166,10 @@ const Login = () => {
               {errors.password && <span className="error-message">{errors.password}</span>}
             </div>
 
-            {/* ⭐ CUSTOM CAPTCHA (FIXED) */}
+            {/* CAPTCHA */}
             <Captcha
               onChange={(value) => setUserCaptcha(value)}
-              onGenerate={(text) => setGeneratedCaptcha(text)}  // IMPORTANT FIX
+              onGenerate={(text) => setGeneratedCaptcha(text)}
             />
 
             {errors.captcha && <span className="error-message">{errors.captcha}</span>}

@@ -1,3 +1,4 @@
+/* MAIN NAVBAR */
 .navbar {
   background: var(--black);
   width: 280px;
@@ -11,13 +12,40 @@
   z-index: 1000;
 }
 
+/* WRAPPER */
 .navbar-container {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 2rem 0;
+  padding: 1.3rem 0;
 }
 
+/* TOP SECTION (Logo + Logout Button) */
+.navbar-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.3rem;
+  margin-bottom: 2rem;
+}
+
+/* Top-Right Logout Button */
+.logout-top-btn {
+  background: var(--gold);
+  border: none;
+  padding: 0.55rem;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--black);
+  font-size: 1.2rem;
+  transition: 0.3s;
+}
+
+.logout-top-btn:hover {
+  background: var(--gold-dark);
+}
+
+/* LOGO */
 .navbar-logo {
   display: flex;
   align-items: center;
@@ -26,9 +54,7 @@
   font-weight: 700;
   color: var(--gold);
   text-decoration: none;
-  padding: 0 1.5rem 2rem 1.5rem;
-  border-bottom: 1px solid var(--gray-dark);
-  margin-bottom: 2rem;
+  padding: 0;
   transition: opacity 0.2s;
 }
 
@@ -41,6 +67,7 @@
   color: var(--gold);
 }
 
+/* MENU */
 .navbar-menu {
   display: flex;
   flex-direction: column;
@@ -58,7 +85,7 @@
   color: var(--white);
   text-decoration: none;
   border-radius: 6px;
-  transition: all 0.2s;
+  transition: 0.2s;
   font-weight: 500;
 }
 
@@ -76,17 +103,13 @@
   font-size: 1rem;
 }
 
-.mobile-menu-toggle {
-  display: none;
-}
-
+/* USER INFO AT BOTTOM */
 .navbar-user {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   padding: 1.5rem 1rem 0 1rem;
   border-top: 1px solid var(--gray-dark);
-  margin-top: auto;
 }
 
 .user-info {
@@ -104,29 +127,12 @@
   white-space: nowrap;
 }
 
+/* OLD LOGOUT BTN (NOT USED NOW) */
 .logout-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  background: transparent;
-  color: var(--white);
-  border: 1px solid var(--gray-dark);
-  border-radius: 6px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-size: 0.95rem;
-  width: 100%;
+  display: none;
 }
 
-.logout-btn:hover {
-  background: var(--black-light);
-  border-color: var(--gold);
-  color: var(--gold);
-}
-
+/* MOBILE STYLES */
 @media (max-width: 768px) {
   .navbar {
     width: 100%;
@@ -139,14 +145,12 @@
     height: auto;
   }
 
-  .navbar-container {
-    padding: 1rem 0;
+  .navbar-top {
+    display: none; /* hide logo + logout on mobile */
   }
 
-  .navbar-logo {
-    padding: 0 1rem 1rem 1rem;
-    margin-bottom: 1rem;
-    font-size: 1.25rem;
+  .navbar-container {
+    padding: 1rem 0;
   }
 
   .navbar-menu {

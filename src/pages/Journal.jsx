@@ -8,26 +8,16 @@ const Journal = () => {
   const [currentEntry, setCurrentEntry] = useState({ id: null, content: '', date: '' })
   const [editingId, setEditingId] = useState(null)
 
-  /* -----------------------------------------------------
-      ⭐ LOAD DATA FROM LOCAL STORAGE ONCE AT PAGE OPEN
-  ------------------------------------------------------*/
+  // ⭐ Load saved journals permanently
   useEffect(() => {
-    const saved = localStorage.getItem('journalEntries')
-    if (saved) {
-      try {
-        setEntries(JSON.parse(saved))
-      } catch {
-        setEntries([])
-      }
-    }
+    const saved = JSON.parse(localStorage.getItem('journalEntries') || '[]')
+    setEntries(saved)
   }, [])
 
-  /* -----------------------------------------------------
-      ⭐ AUTO-SAVE TO LOCAL STORAGE WHEN ENTRIES CHANGE
-  ------------------------------------------------------*/
-  useEffect(() => {
-    localStorage.setItem('journalEntries', JSON.stringify(entries))
-  }, [entries])
+  // ⭐ Save journal entries permanently
+  const saveToLocalStorage = (data) => {
+    localStorage.setItem('journalEntries', JSON.stringify(data))
+  }
 
   const handleStartWriting = () => {
     setIsWriting(true)
@@ -45,31 +35,30 @@ const Journal = () => {
       return
     }
 
-    /* -----------------------------------------------------
-        ⭐ UPDATE EXISTING ENTRY
-    ------------------------------------------------------*/
+    let updatedEntries;
+
+    // ⭐ Editing existing entry
     if (editingId) {
-      const updated = entries.map(entry =>
+      updatedEntries = entries.map(entry =>
         entry.id === editingId
           ? { ...entry, content: currentEntry.content, date: currentEntry.date }
           : entry
       )
-      setEntries(updated)
-    }
-
-    /* -----------------------------------------------------
-        ⭐ ADD NEW ENTRY
-    ------------------------------------------------------*/
+    } 
+    // ⭐ Creating a NEW journal entry
     else {
       const newEntry = {
         id: Date.now(),
         content: currentEntry.content,
-        date: currentEntry.date || new Date().toISOString().split('T')[0],
+        date: currentEntry.date,
       }
-      setEntries(prev => [...prev, newEntry])
+
+      updatedEntries = [...entries, newEntry]
     }
 
-    // reset form
+    setEntries(updatedEntries)
+    saveToLocalStorage(updatedEntries)   // ⭐ FIX: Save permanently
+
     setIsWriting(false)
     setCurrentEntry({ id: null, content: '', date: '' })
     setEditingId(null)
@@ -82,18 +71,16 @@ const Journal = () => {
   }
 
   const handleEdit = (entry) => {
-    setCurrentEntry({
-      id: entry.id,
-      content: entry.content,
-      date: entry.date,
-    })
+    setCurrentEntry(entry)
     setIsWriting(true)
     setEditingId(entry.id)
   }
 
   const handleDelete = (id) => {
     if (window.confirm('Are you sure you want to delete this entry?')) {
-      setEntries(entries.filter(entry => entry.id !== id))
+      const updated = entries.filter(entry => entry.id !== id)
+      setEntries(updated)
+      saveToLocalStorage(updated)  // ⭐ FIX: Update local storage
     }
   }
 
@@ -113,16 +100,15 @@ const Journal = () => {
         )}
       </div>
 
-      {/* -----------------------------------------------------
-          ⭐ JOURNAL WRITING EDITOR
-      ------------------------------------------------------*/}
       {isWriting && (
         <div className="journal-editor">
           <div className="editor-header">
             <input
               type="date"
               value={currentEntry.date}
-              onChange={(e) => setCurrentEntry({ ...currentEntry, date: e.target.value })}
+              onChange={(e) =>
+                setCurrentEntry({ ...currentEntry, date: e.target.value })
+              }
               className="date-input"
             />
 
@@ -138,8 +124,10 @@ const Journal = () => {
 
           <textarea
             value={currentEntry.content}
-            onChange={(e) => setCurrentEntry({ ...currentEntry, content: e.target.value })}
-            placeholder="Write your thoughts here... What happened today? How are you feeling? What are you grateful for?"
+            onChange={(e) =>
+              setCurrentEntry({ ...currentEntry, content: e.target.value })
+            }
+            placeholder="Write your thoughts here..."
             className="journal-textarea"
             rows="15"
             autoFocus
@@ -147,18 +135,14 @@ const Journal = () => {
         </div>
       )}
 
-      {/* -----------------------------------------------------
-          ⭐ JOURNAL LIST VIEW
-      ------------------------------------------------------*/}
       <div className="journal-entries">
-        {entries.length === 0 && !isWriting ? (
+        {entries.length === 0 ? (
           <div className="empty-state">
-            <p>No journal entries yet. Start writing to track your thoughts and feelings!</p>
+            <p>No journal entries yet. Start writing your first one!</p>
           </div>
         ) : (
           entries.slice().reverse().map((entry) => (
             <div key={entry.id} className="journal-entry">
-              
               <div className="entry-header">
                 <div className="entry-date">
                   {new Date(entry.date).toLocaleDateString('en-US', {
@@ -170,30 +154,20 @@ const Journal = () => {
                 </div>
 
                 <div className="entry-actions">
-                  <button
-                    className="edit-btn"
-                    onClick={() => handleEdit(entry)}
-                    title="Edit entry"
-                  >
+                  <button className="edit-btn" onClick={() => handleEdit(entry)}>
                     <FiEdit2 />
                   </button>
-
-                  <button
-                    className="delete-btn"
-                    onClick={() => handleDelete(entry.id)}
-                    title="Delete entry"
-                  >
+                  <button className="delete-btn" onClick={() => handleDelete(entry.id)}>
                     <FiTrash2 />
                   </button>
                 </div>
               </div>
 
               <div className="entry-content">
-                {entry.content.split('\n').map((paragraph, idx) => (
-                  <p key={idx}>{paragraph.trim() !== "" ? paragraph : "\u00A0"}</p>
+                {entry.content.split('\n').map((para, i) => (
+                  <p key={i}>{para}</p>
                 ))}
               </div>
-
             </div>
           ))
         )}

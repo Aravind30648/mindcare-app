@@ -11,6 +11,7 @@ import Counseling from './pages/Counseling'
 import Community from './pages/Community'
 import SelfAssessment from './pages/SelfAssessment'
 import Admin from './pages/Admin'
+import Profile from './pages/Profile'   // ⭐ ADDED
 import './App.css'
 
 // Protected Route Component
@@ -25,6 +26,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
+
         <Route
           path="/*"
           element={
@@ -41,16 +43,17 @@ function App() {
                     <Route path="/community" element={<Community />} />
                     <Route path="/assessment" element={<SelfAssessment />} />
                     <Route path="/admin" element={<Admin />} />
+                    <Route path="/profile" element={<Profile />} /> {/* ⭐ ADDED */}
                   </Routes>
                 </main>
               </div>
             </ProtectedRoute>
           }
         />
+
       </Routes>
     </Router>
   )
 }
 
 export default App
-
